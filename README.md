@@ -4,3 +4,5 @@
 
 # Start a strfry instance in a devcontainer
 `devcontainer open .`
+
+To use to local teste as dev environment.
