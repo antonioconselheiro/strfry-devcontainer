@@ -1,0 +1,15 @@
+services:
+  strfry-dev:
+    image: strfry-dev
+    container_name: strfry-dev
+    build:
+      context: ../.
+      dockerfile: ./.devcontainer/Dockerfile
+    privileged: true
+    working_dir: /strfry-dev
+    ports:
+      - "7777:7777"
+    volumes:
+      - ..:/strfry-dev:cached
+      - /var/run/docker.sock:/var/run/docker.sock
+    tty: true
