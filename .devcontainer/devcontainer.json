@@ -1,17 +1,17 @@
 {
-  "name": "Nostr Pool Dev Environment",
+  "name": "just a Strfry in a Devcontainer",
   "dockerComposeFile": [
     "docker-compose.yml"
   ],
   "service": "strfry-dev",
 	"workspaceFolder": "/strfry-dev",
+  "postAttachCommand": "bash -c 'tail -f /log/log.log && bash'",
 	"customizations": {
 		"vscode": {
 			"extensions": [
-        "eamodio.gitlens",
         "ms-azuretools.vscode-docker",
         "Endormi.2077-theme",
-        "cybersamurai.midnight-purple-2077"
+        "eamodio.gitlens"
       ]
 		}
 	}

@@ -2,10 +2,11 @@ services:
   strfry-dev:
     image: strfry-dev
     container_name: strfry-dev
+    environment:
+      - DEBUG=1
     build:
       context: ../.
       dockerfile: ./.devcontainer/Dockerfile
-    privileged: true
     working_dir: /strfry-dev
     ports:
       - "7777:7777"

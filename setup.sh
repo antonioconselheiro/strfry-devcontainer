@@ -1,7 +1,5 @@
 #bin/bash
 
-cd ..;
-
 echo "Github name:"
 read githubnome
 

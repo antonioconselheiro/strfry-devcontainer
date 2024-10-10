@@ -1,18 +1,40 @@
-FROM nginx
+FROM ubuntu:jammy AS host
+ENV DEBIAN_FRONTEND=noninteractive
+FROM ubuntu:jammy AS build
+ENV DEBIAN_FRONTEND=noninteractive
+WORKDIR /build
 
 RUN apt update
-RUN apt install -y git build-essential libyaml-perl \
-  libtemplate-perl libregexp-grammars-perl libssl-dev \
-  zlib1g-dev liblmdb-dev libflatbuffers-dev libsecp256k1-dev \
-  libzstd-dev certbot python3-certbot-nginx jq wget
+RUN apt install -y --no-install-recommends \
+    git g++ make pkg-config libtool ca-certificates \
+    libssl-dev zlib1g-dev liblmdb-dev libflatbuffers-dev \
+    libsecp256k1-dev libzstd-dev
 
-# Install docker and docker-compose
-RUN curl -sSL https://get.docker.com/ | sh
-RUN curl -L "https://github.com/docker/compose/releases/download/1.29.2/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
-RUN chmod +x /usr/local/bin/docker-compose
+# Clean
+RUN apt clean
+RUN rm -rf /var/lib/apt/lists/*
+
+RUN git clone https://github.com/hoytech/strfry
+WORKDIR /build/strfry
+
+RUN git submodule update --init
+RUN make setup-golpe
+RUN make -j4
+
+FROM host
+VOLUME /db
+VOLUME /log
+
+# copy relay from build container
+COPY --from=build /build/strfry /usr/local/bin
+COPY ./strfry.conf /etc/strfry.conf
+
+# Install dev tools and relay dependencies
+RUN apt update
+RUN apt install -y --no-install-recommends curl git jq nginx openssh-client liblmdb0 libflatbuffers1 libsecp256k1-0 libb2-1 libzstd1
 
 # Installing nak, the nostr army knife
-RUN wget https://github.com/fiatjaf/nak/releases/download/v0.7.7/nak-v0.7.7-linux-amd64
+RUN curl -k -L -o nak-v0.7.7-linux-amd64 https://github.com/fiatjaf/nak/releases/download/v0.7.7/nak-v0.7.7-linux-amd64
 RUN mv nak-v0.7.7-linux-amd64 /usr/bin/nak
 RUN chmod +x /usr/bin/nak
 
@@ -20,20 +42,15 @@ RUN chmod +x /usr/bin/nak
 RUN apt clean
 RUN rm -rf /var/lib/apt/lists/*
 
-COPY ./pool/strfry.conf /etc/strfry.conf
+# Credentials
+COPY ./.gitconfig /root/.gitconfig
+COPY ./.ssh /root/.ssh
+RUN chmod 600 -R /root/.ssh
+RUN ssh-add -D && ssh-add /root/.ssh/id_ed25519 || true
 
-RUN git clone https://github.com/hoytech/strfry
-WORKDIR /db
-WORKDIR /strfry
-
-RUN git submodule update --init
-RUN make setup-golpe
-RUN make -j4
-
-RUN cp strfry /usr/local/bin
+# config nginx
 RUN rm -rf /etc/nginx/sites-available/default
 RUN mkdir -p /etc/nginx/sites-available
-
 RUN echo 'server {\n\
   server_name localhost;\n\
   location / {\n\
@@ -46,14 +63,9 @@ RUN echo 'server {\n\
   }\n\
 }' > /etc/nginx/sites-available/default
 
-# Credentials
-COPY ./.gitconfig /root/.gitconfig
-COPY ./.ssh /root/.ssh
-RUN chmod 600 -R /root/.ssh
-RUN ssh-add -D && ssh-add /root/.ssh/id_ed25519 || true
-
 EXPOSE 7777
 WORKDIR /strfry-dev
+COPY start.sh .
+COPY log.sh .
 
-
-ENTRYPOINT [ "sh", "/strfry-dev/pool/start.sh" ]
+ENTRYPOINT [ "sh", "./start.sh" ]
