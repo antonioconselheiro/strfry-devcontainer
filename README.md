@@ -10,6 +10,7 @@ To use to local teste as dev environment.
 Docker, docker-compose and devcontainer
 
 ## Execute
+With vscode: 
 `sh setup.sh`
 `devcontainer open .`
 
