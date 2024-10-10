@@ -13,3 +13,5 @@ Docker, docker-compose and devcontainer
 `sh setup.sh`
 `devcontainer open .`
 
+To run without vscode:
+`docker-compose -f .devcontainer/docker-compose.yml up`
