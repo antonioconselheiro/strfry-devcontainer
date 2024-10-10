@@ -5,6 +5,8 @@
 # Strfry in Devcontainer
 To use to local teste as dev environment.
 
+![image](https://github.com/user-attachments/assets/f2fd1544-0eb2-48cb-8874-1519587ce893)
+
 ## Dependency
 Docker, docker-compose and devcontainer
 
