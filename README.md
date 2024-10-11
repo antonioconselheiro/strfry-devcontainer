@@ -9,7 +9,10 @@ To use to local teste as dev environment.
 ## Dependency
 Docker, docker-compose and devcontainer
 
-## Execute
+## How to run
+With vscode: 
 `sh setup.sh`
 `devcontainer open .`
 
+Without vscode:
+`docker-compose -f .devcontainer/docker-compose.yml up`
