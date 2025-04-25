@@ -63,8 +63,8 @@ RUN echo 'server {\n\
   }\n\
 }' > /etc/nginx/sites-available/default
 
-ENV LANG C.UTF-8
-ENV TZ America/Sao_Paulo
+ENV LANG=C.UTF-8
+ENV TZ=America/Sao_Paulo
 
 EXPOSE 7777
 WORKDIR /strfry-dev
