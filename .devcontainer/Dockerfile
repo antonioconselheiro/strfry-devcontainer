@@ -43,10 +43,10 @@ RUN apt clean
 RUN rm -rf /var/lib/apt/lists/*
 
 # Credentials
-COPY ./.gitconfig /root/.gitconfig
-COPY ./.ssh /root/.ssh
-RUN chmod 600 -R /root/.ssh
-RUN ssh-add -D && ssh-add /root/.ssh/id_ed25519 || true
+# COPY ./.gitconfig /root/.gitconfig
+# COPY ./.ssh /root/.ssh
+# RUN chmod 600 -R /root/.ssh
+# RUN ssh-add -D && ssh-add /root/.ssh/id_ed25519 || true
 
 # config nginx
 RUN rm -rf /etc/nginx/sites-available/default
